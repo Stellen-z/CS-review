@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 #include <algorithm>
-
+#include <queue>
 
 typedef int BTDataType;
 typedef struct BinaryTreeNode
@@ -42,6 +42,8 @@ BTNode* CreatBinaryTree()
 	node4->left = node5;
 	node4->right = node6;
 	node5->right = node7;
+
+	printf("2:%p", node2);
 
 	return node1;
 }
@@ -100,6 +102,7 @@ void MidOrder(BTNode* root)
 //	return size;
 //}
 
+//节点个数
 int TreeSize(BTNode* root)
 {
 	//if (root == NULL) return 0;
@@ -113,7 +116,7 @@ int TreeSize(BTNode* root)
 		TreeSize(root->left) + TreeSize(root->right) + 1; 
 }
 
-
+//叶子节点个数
 int TreeLeafSize(BTNode* root)
 {
 	if (root == NULL) return 0;
@@ -123,12 +126,138 @@ int TreeLeafSize(BTNode* root)
 	return TreeLeafSize(root->left) + TreeLeafSize(root->right);
 }
 
+//树高
 int TreeHeight(BTNode* root)
 {
 	if (root == NULL) return 0;
 
 	return std::max(TreeHeight(root->left), TreeHeight(root->right)) + 1;
 }
+
+//第k层节点个数 
+int TreeLevelKSize(BTNode* root,int k)
+{
+	if (root == NULL) return 0;
+
+	if (k == 1) return 1;
+
+	return TreeLevelKSize(root->left, k - 1) + TreeLevelKSize(root->right, k - 1);
+	
+}
+
+//查找值为x的节点
+BTNode* TreeFind(BTNode* root, BTDataType x)
+{
+	if (root == NULL) return NULL;
+
+	if (root->data == x) return root;
+
+	//左边找到了，不需要去右边找
+	//BTNode* _left = TreeFind(root->left, x);
+	//BTNode* _right = TreeFind(root->right, x);
+	
+	BTNode* _left = TreeFind(root->left, x);
+	if (_left) return _left;
+	return TreeFind(root->right, x);
+
+}
+
+//二叉树的销毁
+void TreeDestroy(BTNode* root)
+{
+	if (root == NULL) return;
+
+	TreeDestroy(root->left);
+	TreeDestroy(root->right);
+
+	free(root);
+}	
+
+//层序遍历
+void TreeLevelOrder(BTNode* root)
+{
+	std::queue<BTNode*> q;
+
+	if(root) q.push(root);
+
+	while (!q.empty())
+	{
+		BTNode* front = q.front();
+		q.pop();
+
+		std::cout << front->data << " ";
+
+		if (front->left) q.push(front->left);
+		if (front->right) q.push(front->right);
+	}
+	std::cout << std::endl;
+}
+
+//判断是否完全二叉树
+//层序+入空节点
+bool TreeCompleted(BTNode* root)
+{
+	std::queue<BTNode*> q;
+
+	if (root) q.push(root);
+
+	while (!q.empty())
+	{
+		BTNode* front = q.front();
+
+		//遇到第一个空就可以进行判断，如果有非空，就不是完全二叉树
+		//因为空之前的非空的孩子全部都进入队列
+		if (front == NULL)
+		{
+			break;
+		}
+
+		q.pop();
+
+		q.push(front->left);
+		q.push(front->right);
+	}
+	//判断是否有非空
+	while (!q.empty())
+	{
+		BTNode* front = q.front();
+		q.pop();
+
+		if (front) return false;
+	}
+	return true;
+}
+
+//bool TreeCompleted(BTNode* root)
+//{
+//	std::queue<BTNode*> q;
+//
+//	if (root) q.push(root);
+//
+//	while (!q.empty())
+//	{
+//		BTNode* front = q.front();
+//		q.pop();
+//
+//		//遇到第一个空就可以进行判断，如果有非空，就不是完全二叉树
+//		//因为空之前的非空的孩子全部都进入队列
+//		if (front == NULL)
+//		{
+//			while (!q.empty())
+//			{
+//				BTNode* front = q.front();
+//				q.pop();
+//
+//				if (front) return false;
+//			}
+//			return true;
+//		}
+//
+//		q.push(front->left);
+//		q.push(front->right);
+//	}
+//	return true;
+//}
 
 int main()        
 {
@@ -148,7 +277,10 @@ int main()
 	printf("TreeSize:%d\n", TreeSize(root));
 	printf("TreeLeafSize:%d\n", TreeLeafSize(root));
 	printf("TreeHeight:%d\n", TreeHeight(root));
-
+	printf("TreeLevelKSize:%d\n", TreeLevelKSize(root,4));
+	printf("TreeFind:%p\n", TreeFind(root, 2));
+	TreeLevelOrder(root);
+	std::cout << TreeCompleted(root) << std::endl;
 
 	return 0;
 }
