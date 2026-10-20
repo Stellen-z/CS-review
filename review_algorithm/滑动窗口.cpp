@@ -20,9 +20,10 @@ int main()
 	{
 		sum += a[r];
 		
-		if(r - l + 1 > k) sum -= a[l++];
+		while(r - l + 1 > k) sum -= a[l++];
 		
 		if(r - l + 1 == k) ret = max(ret,sum);
+		
 		r++;
 	}
 	
