@@ -1,5 +1,4 @@
 #include <iostream>
-#include <unordered_map>
 
 using namespace std;
 typedef long long LL;
@@ -12,24 +11,22 @@ int main()
 {
 	int n,k;cin >> n >> k;
 	
-	unordered_map<int,int> mp;
-	for(int i = 1;i <= k;i++)
+	for(int i = 1;i <= n;i++) cin >> a[i];
+	
+	LL sum = 0,ret = -1e9;
+
+	int l = 1,r = 1;
+	while(r <= n)
 	{
-		int x;cin >> x;
-		LL ret = -1e9,sum = 0;
-		if((int)mp.size() != k)
-		{
-			mp.insert(x);
-			sum += x;
-		}
-		else
-		{
-			if(sum > ret)
-			{
-				ret = sum;
-				mp.erase()
-			}
-		}
+		sum += a[r];
+		
+		if(r - l + 1 > k) sum -= a[l++];
+		
+		if(r - l + 1 == k) ret = max(ret,sum);
+		r++;
 	}
+	
+	cout << ret << endl;
+	
 	return 0;
 }
